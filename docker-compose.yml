@@ -6,7 +6,8 @@ services:
     ports:
       - "5025:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/ProjectManagement.db
       - Jwt__Secret=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - Jwt__Issuer=ProjectManagementApi
