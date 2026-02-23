@@ -1,0 +1,18 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5025:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/ProjectManagement.db
+      - Jwt__Secret=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - Jwt__Issuer=ProjectManagementApi
+      - Jwt__Audience=ProjectManagementApi
+    volumes:
+      - sqlite_data:/app/data
+
+volumes:
+  sqlite_data:

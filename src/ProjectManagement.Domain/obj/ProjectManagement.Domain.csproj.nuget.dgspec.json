@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/elsherbiny/Downloads/ProjectManagementApi/src/ProjectManagement.Domain/ProjectManagement.Domain.csproj": {}
+  },
+  "projects": {
+    "/Users/elsherbiny/Downloads/ProjectManagementApi/src/ProjectManagement.Domain/ProjectManagement.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/elsherbiny/Downloads/ProjectManagementApi/src/ProjectManagement.Domain/ProjectManagement.Domain.csproj",
+        "projectName": "ProjectManagement.Domain",
+        "projectPath": "/Users/elsherbiny/Downloads/ProjectManagementApi/src/ProjectManagement.Domain/ProjectManagement.Domain.csproj",
+        "packagesPath": "/Users/elsherbiny/.nuget/packages/",
+        "outputPath": "/Users/elsherbiny/Downloads/ProjectManagementApi/src/ProjectManagement.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/elsherbiny/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MediatR": {
+              "target": "Package",
+              "version": "[12.4.1, )"
+            },
+            "Microsoft.Extensions.Identity.Stores": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.310/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

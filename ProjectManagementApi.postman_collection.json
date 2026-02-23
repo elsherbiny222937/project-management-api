@@ -1,0 +1,728 @@
+{
+  "info": {
+    "name": "Project Management API",
+    "_postman_id": "pm-api-collection-v1",
+    "description": "Complete API collection for the Project Management API. \n\n## Setup\n1. Set `baseUrl` variable to your API URL (default: http://localhost:5000)\n2. Run **Auth / Login** first — the token is auto-saved to `authToken`\n3. All secured endpoints use `{{authToken}}` automatically\n\n## Seed Credentials\n- Admin: admin@projectmgmt.com / Admin@123\n- PM: pm@projectmgmt.com / Manager@123\n- Dev: dev@projectmgmt.com / Dev@123",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "authToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "projectId", "value": "", "type": "string" },
+    { "key": "taskId", "value": "", "type": "string" },
+    { "key": "epicId", "value": "", "type": "string" },
+    { "key": "sprintId", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{authToken}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/register", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password@123\",\n  \"role\": \"Developer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('authToken', res.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.refreshToken);",
+                  "  console.log('Token saved:', res.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@projectmgmt.com\",\n  \"password\": \"Admin@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as ProjectManager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('authToken', res.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pm@projectmgmt.com\",\n  \"password\": \"Manager@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('authToken', res.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","refresh-token"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accessToken\": \"{{authToken}}\",\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📁 Projects",
+      "item": [
+        {
+          "name": "Get All Projects",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.items && res.items.length > 0) {",
+                  "    pm.collectionVariables.set('projectId', res.items[0].id);",
+                  "    console.log('ProjectId saved:', res.items[0].id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","projects"],
+              "query": [
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "searchTerm", "value": "", "disabled": true },
+                { "key": "sortBy", "value": "name", "disabled": true },
+                { "key": "sortDescending", "value": "false", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Project by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}"] }
+          }
+        },
+        {
+          "name": "Create Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('projectId', res.id);",
+                  "  console.log('New ProjectId saved:', res.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects", "host": ["{{baseUrl}}"], "path": ["api","v1","projects"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"E-Commerce Platform\",\n  \"description\": \"Build a full-featured e-commerce platform with payment integration\",\n  \"startDate\": \"2026-03-01T00:00:00Z\",\n  \"endDate\": \"2026-09-30T00:00:00Z\",\n  \"status\": \"NotStarted\",\n  \"budget\": 150000.00\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{projectId}}\",\n  \"name\": \"E-Commerce Platform v2\",\n  \"description\": \"Updated description with new scope\",\n  \"startDate\": \"2026-03-01T00:00:00Z\",\n  \"endDate\": \"2026-12-31T00:00:00Z\",\n  \"status\": \"InProgress\",\n  \"budget\": 200000.00\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}"] }
+          }
+        },
+        {
+          "name": "Duplicate Project",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/duplicate", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","duplicate"] }
+          }
+        },
+        {
+          "name": "Add Member to Project",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/members", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","members"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Projects - Filtered & Sorted",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects?pageNumber=1&pageSize=5&searchTerm=commerce&sortBy=name&sortDescending=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","projects"],
+              "query": [
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "5" },
+                { "key": "searchTerm", "value": "commerce" },
+                { "key": "sortBy", "value": "name" },
+                { "key": "sortDescending", "value": "false" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✅ Tasks",
+      "item": [
+        {
+          "name": "Get Tasks by Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.items && res.items.length > 0) {",
+                  "    pm.collectionVariables.set('taskId', res.items[0].id);",
+                  "    console.log('TaskId saved:', res.items[0].id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/tasks?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","projects","{{projectId}}","tasks"],
+              "query": [
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "searchTerm", "value": "", "disabled": true },
+                { "key": "sortBy", "value": "dueDate", "disabled": true },
+                { "key": "sortDescending", "value": "false", "disabled": true },
+                { "key": "statusFilter", "value": "InProgress", "disabled": true },
+                { "key": "priorityFilter", "value": "High", "disabled": true },
+                { "key": "assigneeFilter", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}"] }
+          }
+        },
+        {
+          "name": "Create Task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('taskId', res.id);",
+                  "  console.log('New TaskId saved:', res.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","tasks"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Implement Payment Gateway\",\n  \"description\": \"Integrate Stripe payment gateway with webhook support\",\n  \"priorityLevel\": \"High\",\n  \"dueDate\": \"2026-04-15T00:00:00Z\",\n  \"estimatedHours\": 16.0,\n  \"statusId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{taskId}}\",\n  \"title\": \"Implement Stripe Payment Gateway\",\n  \"description\": \"Full Stripe integration with webhooks, refunds, and subscriptions\",\n  \"priorityLevel\": \"High\",\n  \"dueDate\": \"2026-04-20T00:00:00Z\",\n  \"estimatedHours\": 24.0\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}"] }
+          }
+        },
+        {
+          "name": "Duplicate Task",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/duplicate", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","duplicate"] }
+          }
+        },
+        {
+          "name": "Bulk Update Task Status",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/bulk-status-update", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","bulk-status-update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskIds\": [\"{{taskId}}\"],\n  \"statusId\": \"STATUS_GUID_HERE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Update Task Assignee",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/bulk-assignee-update", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","bulk-assignee-update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskIds\": [\"{{taskId}}\"],\n  \"assignedToId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Delete Tasks",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/bulk-delete", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","bulk-delete"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskIds\": [\"{{taskId}}\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Log Time to Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/log-time", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","log-time"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hours\": 3.5\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Comment to Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/comments", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","comments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Started working on this. Will need access to the Stripe test keys.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Blocker to Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/blockers", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","blockers"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blockerTaskId\": \"BLOCKER_TASK_GUID_HERE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Blocker from Task",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/blockers/BLOCKER_TASK_GUID_HERE", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","blockers","BLOCKER_TASK_GUID_HERE"] }
+          }
+        },
+        {
+          "name": "Assign Task to Sprint",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/assign-sprint", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","assign-sprint"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Task to Epic",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/assign-epic", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","assign-epic"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"epicId\": \"{{epicId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Task from Sprint",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/remove-from-sprint", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","remove-from-sprint"] }
+          }
+        },
+        {
+          "name": "Remove Task from Epic",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/remove-from-epic", "host": ["{{baseUrl}}"], "path": ["api","v1","tasks","{{taskId}}","remove-from-epic"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏷️ Task Statuses",
+      "item": [
+        {
+          "name": "Get Statuses by Project",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/statuses", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","statuses"] }
+          }
+        },
+        {
+          "name": "Create Task Status",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/statuses", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","statuses"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"In Review\",\n  \"category\": \"InProgress\",\n  \"color\": \"#FFA500\",\n  \"order\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Task Status",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/statuses/STATUS_GUID_HERE", "host": ["{{baseUrl}}"], "path": ["api","v1","statuses","STATUS_GUID_HERE"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"STATUS_GUID_HERE\",\n  \"name\": \"Under Review\",\n  \"category\": \"InProgress\",\n  \"color\": \"#FF8C00\",\n  \"order\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Task Status",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/v1/statuses/STATUS_GUID_HERE", "host": ["{{baseUrl}}"], "path": ["api","v1","statuses","STATUS_GUID_HERE"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚀 Epics",
+      "item": [
+        {
+          "name": "Get Epics by Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.items && res.items.length > 0) {",
+                  "    pm.collectionVariables.set('epicId', res.items[0].id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/epics?pageNumber=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","epics"], "query": [{ "key": "pageNumber", "value": "1" }, { "key": "pageSize", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get Epic by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/epics/{{epicId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","epics","{{epicId}}"] }
+          }
+        },
+        {
+          "name": "Create Epic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('epicId', res.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/epics", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","epics"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Payment System\",\n  \"description\": \"All tasks related to the payment processing system\",\n  \"status\": \"NotStarted\",\n  \"startDate\": \"2026-03-01T00:00:00Z\",\n  \"endDate\": \"2026-05-31T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Epic",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/epics/{{epicId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","epics","{{epicId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{epicId}}\",\n  \"title\": \"Payment & Billing System\",\n  \"description\": \"Complete payment processing, invoicing, and subscription management\",\n  \"status\": \"InProgress\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Epic",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/v1/epics/{{epicId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","epics","{{epicId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprints",
+      "item": [
+        {
+          "name": "Get Sprints by Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.items && res.items.length > 0) {",
+                  "    pm.collectionVariables.set('sprintId', res.items[0].id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/sprints?pageNumber=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","sprints"], "query": [{ "key": "pageNumber", "value": "1" }, { "key": "pageSize", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get Sprint by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/sprints/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","sprints","{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Create Sprint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('sprintId', res.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/sprints", "host": ["{{baseUrl}}"], "path": ["api","v1","projects","{{projectId}}","sprints"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sprint 1 - Foundation\",\n  \"goal\": \"Set up core infrastructure and authentication\",\n  \"startsAt\": \"2026-03-01T00:00:00Z\",\n  \"endsAt\": \"2026-03-14T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Sprint",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/sprints/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","sprints","{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{sprintId}}\",\n  \"title\": \"Sprint 1 - Foundation & Auth\",\n  \"goal\": \"Core infrastructure, authentication, and user management\",\n  \"startsAt\": \"2026-03-01T00:00:00Z\",\n  \"endsAt\": \"2026-03-21T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Sprint",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/v1/sprints/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","sprints","{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/users?pageNumber=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["api","v1","users"], "query": [{ "key": "pageNumber", "value": "1" }, { "key": "pageSize", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","users","{{userId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 Health & System",
+      "item": [
+        {
+          "name": "Health - Live",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health/live", "host": ["{{baseUrl}}"], "path": ["health","live"] }
+          }
+        },
+        {
+          "name": "Health - Ready",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health/ready", "host": ["{{baseUrl}}"], "path": ["health","ready"] }
+          }
+        },
+        {
+          "name": "Swagger JSON",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/swagger/v1/swagger.json", "host": ["{{baseUrl}}"], "path": ["swagger","v1","swagger.json"] }
+          }
+        }
+      ]
+    }
+  ]
+}
